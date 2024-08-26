@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1>
+        <a href="/">Stocks</a>
+        <i class="angle double right icon "></i>
+        {{ stock.name }}
+        {{ stock.symbol }}
+    </h1>
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container" id="tv_chart_container"></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async></script>
+    <script type="text/javascript">
+        new TradingView.widget(
+            {
+                "width": "980",
+                "height": "610", 
+                // "symbol": "NASDAQ:AAPL",
+                "symbol": "{% if stock.exchange =='ARCA' %}AMEX{% else %}{{ stock.exchange }}{% endif %}:{{ stock.symbol }}",
+                "interval": "D",
+                "timezone": "America/New_York",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "allow_symbol_change": true,
+                "calendar": false,
+                "support_host": "https://www.tradingview.com",
+                "studies": [
+                    "MASimple@tv-basicstudies"
+                ],
+                "container_id": "tv_chart_container",
+                "library_path": "/charting_library/",
+                "locale": "en",            
+                "branding_code": "<!-- TradingView Widget BEGIN --><div class='tradingview-widget-container'><div id='tv_chart_container'></div><div class='tradingview-widget-copyright'><a href='https://www.tradingview.com' rel='noopener nofollow' target='_blank'><span class='blue-text'>Track all markets on TradingView</span></a></div></div><!-- TradingView Widget END -->"
+            }
+        );
+    </script>
+    <h2>Strategies</h2> 
+    <form method="post" action="/apply_strategy">
+        <select name="strategy_id">
+        {% for strategy in strategies %}
+            <option value="{{ strategy.id }}">{{ strategy.name }}</option>
+        {% endfor %}
+        </select>
+        <input type="hidden" name="stock_id" value="{{ stock.id }}" />
+        <input type="submit" value="Apply Strategy"/>
+    </form>
+    <!-- TradingView Widget END -->
+    <h2>Prices</h2> 
+    <table class="ui selectable striped table">
+        <thead>
+            <tr>
+              <th>Date</th>
+              <th>Open</th>
+              <th>High</th>
+              <th>Low</th>
+              <th>Close</th>
+              <th>Volume</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bar in bars %}
+            <tr>
+                <td>{{ bar.date }}</td>
+                <td>{{ bar.open }}</td>
+                <td>{{ bar.high }}</td>
+                <td>{{ bar.low }}</td>
+                <td>{{ bar.close }}</td>
+                <td>{{ bar.volume }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

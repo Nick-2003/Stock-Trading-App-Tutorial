@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <h1 class="ui center aligned header">Stock List</h1>
+    <form method="get">
+        <select name="filter">
+            <option value="">All Stocks</option>
+            <option 
+            {% if request.query_params.filter == "new_intraday_highs" %} selected="selected" {% endif %} 
+            value="new_intraday_highs">New Intraday Highs</option>
+            <option 
+            {% if request.query_params.filter == "new_closing_highs" %} selected="selected" {% endif %} 
+            value="new_closing_highs">New Closing Highs</option>
+            <option 
+            {% if request.query_params.filter == "new_intraday_lows" %} selected="selected" {% endif %} 
+            value="new_intraday_lows">New Intraday Lows</option>
+            <option 
+            {% if request.query_params.filter == "new_closing_lows" %} selected="selected" {% endif %} 
+            value="new_closing_lows">New Closing Lows</option>
+            {% if request.query_params.filter == "rsi_overbought" %} selected="selected" {% endif %} 
+            value="rsi_overbought">RSI Overbought</option>
+            {% if request.query_params.filter == "rsi_oversold" %} selected="selected" {% endif %} 
+            value="rsi_oversold">RSI Oversold</option>
+            {% if request.query_params.filter == "above_sma_20" %} selected="selected" {% endif %} 
+            value="above_sma_20">Above SMA 20</option>
+            {% if request.query_params.filter == "below_sma_20" %} selected="selected" {% endif %} 
+            value="below_sma_20">Below SMA 20</option>
+            {% if request.query_params.filter == "above_sma_50" %} selected="selected" {% endif %} 
+            value="above_sma_50">Above SMA 50</option>
+            {% if request.query_params.filter == "below_sma_20" %} selected="selected" {% endif %} 
+            value="below_sma_50">Below SMA 50</option>
+        </select>
+        <input type="submit"/>
+    </form>
+    <!-- <h2>{{ indicator_values }}</h2> -->
+    <table class="ui selectable striped table">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <!-- <th class="right aligned">View</th> Link to drill down into idividual stock -->
+                
+                <th>Close Price</th>
+                <th>SMA 20</th>
+                <th>SMA 50</th>
+                <th>RSI 14</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.symbol }}</td>
+                <td><a href="/stock/{{ stock.symbol }}">{{ stock.name }}</a></td>
+                {% if stock.symbol in indicator_values %}
+                    {% if indicator_values[stock.symbol].close %}
+                        <td>{{ indicator_values[stock.symbol].close }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                    {% if indicator_values[stock.symbol].sma_20 %}
+                        <td>{{ indicator_values[stock.symbol].sma_20 }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                    {% if indicator_values[stock.symbol].sma_50 %}
+                        <td>{{ indicator_values[stock.symbol].sma_50 }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                    {% if indicator_values[stock.symbol].rsi_14 %}
+                        <td>{{ indicator_values[stock.symbol].rsi_14 }}</td>
+                    {% else %}
+                        <td>N/A</td>
+                    {% endif %}
+                {% else %}
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
